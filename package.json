@@ -9,7 +9,15 @@
   "license": "",
   "author": "",
   "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "serve": "vite preview"
+  },
+  "dependencies": {
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
   },
   "devDependencies": {
+    "vite": "^5.4.2"
   }
 }
