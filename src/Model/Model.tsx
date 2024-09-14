@@ -117,8 +117,7 @@ function ActivitySwitch(props: ActivitySwitchProps) {
     return <button onClick={onClick} disabled={props.availableDopamineReseve < 1} className={classNames.join(' ')}>{definition.label}</button>
 }
 
-// @ts-ignore
-const initialData: DataPoint[] = [...Array(MaxDataLength)].keys().map((_, i) => ({
+const initialData: DataPoint[] = Object.keys([...Array(MaxDataLength)]).map((_, i) => ({
     minuteOfDay: i,
     dopamineLevel: DopamineBaseTurnOverPerMinuteInPercent,
     reservePercent: 50,
