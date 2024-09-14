@@ -1,0 +1,87 @@
+.Model {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    position: fixed;
+    width: 45%;
+}
+
+.Actions {
+    display: flex;
+    gap: 10px;
+    flex-direction: row;
+    padding: 10px;
+}
+
+.Chart {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+}
+
+.ReserveChart {
+    flex: 0 0;
+}
+
+.DopamineChart {
+    flex: 1;
+    max-height: clamp(200px, 50vh, 400px);
+}
+
+.ProgressBarLabel {
+    display: block;
+    margin-top: 20px;
+    margin-bottom: 5px;
+    font-weight: normal;
+    text-transform: uppercase;
+    font-size: 0.8em;
+}
+
+.ProgressBar {
+    margin: 0 0 20px 0;
+    display: flex;
+    border: 1px solid #888;
+    position: relative;
+}
+
+.ProgressBarValue {
+    position: absolute;
+    left: 0;
+    width: 100%;
+    text-align: center;
+    text-shadow: 1px 1px 2px #fff;
+    padding: 2px 5px;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.DopamineBar {
+    height: 24px;
+    background-color: #00ff9d !important;
+    border-right: 1px solid #549e81;
+    transition: width 0.2s ease-out;
+}
+
+.ActivitySwitch {
+    border-radius: 4px;
+    padding: 4px 6px;
+    background-color: #655f5c;
+    color: #eee;
+}
+
+.ActivitySwitch:hover {
+    cursor: pointer;
+    opacity: 0.8;
+}
+
+.ActivitySwitch:disabled {
+    opacity: 0.3;
+    cursor: no-drop;
+}
+
+.ActivitySwitchActive {
+    background-color: #00ff9d;
+    color: #000;
+}

@@ -1,11 +1,8 @@
+// <reference types="src/global.d.ts" />
 import { createRoot } from 'react-dom/client';
-import * as React from 'react';
+import Model from "./Model/Model";
 
-function Model() {
-    return <div>
-        (Model)
-    </div>
-}
+import './style.css';
 
 const root = createRoot(document.getElementById('right'));
 root.render(<Model />);

@@ -29,3 +29,15 @@ table {
         vertical-align: top;
     }
 }
+
+details {
+    margin-top: 20px;
+    border: 1px solid #ccc;
+    border-radius: 1px;
+    padding: 10px 14px;
+}
+
+details summary {
+    font-weight: bold;
+    cursor: pointer;
+}
