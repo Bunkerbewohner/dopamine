@@ -85,3 +85,8 @@
     background-color: #00ff9d;
     color: #000;
 }
+
+.CustomTooltip {
+    background: rgba(255, 255, 255, 0.67);
+    padding: 2px 8px;
+}

@@ -4,9 +4,9 @@ import {
     Area,
     CartesianGrid,
     ComposedChart, Legend,
-    Line,
+    Line, ReferenceLine,
     ResponsiveContainer,
-    Tooltip,
+    Tooltip, XAxis,
     YAxis
 } from "recharts";
 
@@ -67,7 +67,8 @@ const ACTIVITIES = {
 type Activity = keyof typeof ACTIVITIES;
 
 interface DataPoint {
-    minuteOfDay: number;
+    minuteSinceStart: number;
+    daytime: string;
     dopamineLevel: number; // amount of dopamine used in this minute, unspecified unit and range
     reservePercent: number;
     activities: Activity[];
@@ -117,8 +118,38 @@ function ActivitySwitch(props: ActivitySwitchProps) {
     return <button onClick={onClick} disabled={props.availableDopamineReseve < 1} className={classNames.join(' ')}>{definition.label}</button>
 }
 
+function CustomTooltip({active, payload, label}: any) {
+    if (!active || !payload) return;
+
+    return (
+        <div className={styles.CustomTooltip}>
+            <p>{`Time: ${label}`}</p>
+            <p>{`Reserve: ${payload[0].value.toFixed(2)}`}%</p>
+            <p>{`Turnover: ${payload[1].value.toFixed(2)}`}</p>
+        </div>
+    );
+}
+
+function CustomTick({x, y, stroke, payload}: any) {
+    return (
+        <g transform={`translate(${x},${y})`}>
+            <text x={0} y={0} dy={16} textAnchor="end" fill="#666" transform="rotate(-35)">
+                {payload.value}
+            </text>
+        </g>
+    );
+}
+
+function minuteSinceStartToDaytime(minuteSinceStart: number): string {
+    const minuteOfDay = minuteSinceStart % (24 * 60);
+    const daytimeHour = Math.floor(minuteOfDay / 60);
+    const minuteOfDayInHour = minuteOfDay % 60;
+    return `${daytimeHour}:${minuteOfDayInHour < 10 ? '0' : ''}${minuteOfDayInHour}`;
+}
+
 const initialData: DataPoint[] = Object.keys([...Array(MaxDataLength)]).map((_, i) => ({
-    minuteOfDay: i,
+    minuteSinceStart: i,
+    daytime: minuteSinceStartToDaytime(i),
     dopamineLevel: DopamineBaseTurnOverPerMinuteInPercent,
     reservePercent: 50,
     activities: []
@@ -137,6 +168,8 @@ export default function Model() {
     const currentDopamineUse = totalDopamineUse(activities, 0);
     const currentDopamineDiff = DopamineReserveRefillPerMinuteInPercent - currentDopamineUse;
     const [expanded, setExpanded] = useState(false);
+    const currentMinute = data[data.length - 1].minuteSinceStart;
+    const midnightMarks = data.filter(data => data.minuteSinceStart % (24 * 60) === 0).map(data => (currentMinute + data.minuteSinceStart) % (24*60));
 
     useEffect(() => {
         const interval = setInterval(() => {
@@ -146,10 +179,13 @@ export default function Model() {
             const newPool = Math.max(0, Math.min(100, pool + dopamineDiff));
             setPool(newPool);
 
+            const minuteSinceStart = data[data.length - 1].minuteSinceStart + 1;
+
             const newData = [
                 ...data,
                 {
-                    minuteOfDay: data.length,
+                    minuteSinceStart: minuteSinceStart,
+                    daytime: minuteSinceStartToDaytime(minuteSinceStart),
                     dopamineLevel: dopamineNeed,
                     reservePercent: newPool,
                     activities: activities
@@ -184,12 +220,15 @@ export default function Model() {
                         {/*<CartesianGrid strokeDasharray="3 3"/>*/}
                         <YAxis yAxisId={1} dataKey={'reservePercent'} domain={[0, 100]}/>
                         <YAxis yAxisId={2} dataKey={'dopamineLevel'} orientation={'right'} domain={[0, 1]}/>
+                        <XAxis type={'category'} minTickGap={50} dataKey={'daytime'} domain={[0, 24 * 60]} interval={'preserveEnd'} angle={45}/>
                         <Area type={'natural'} dataKey={'reservePercent'} fill={'rgba(0,255,157,0.58)'}
                               stroke='#00ff9d' yAxisId={1} dot={false} isAnimationActive={false}/>
                         <Line type={'monotone'} dataKey={'dopamineLevel'} stroke={'#7c74bd'} yAxisId={2}
                               strokeWidth={2} dot={false} isAnimationActive={false}/>
-                        <Tooltip/>
+                        <Tooltip content={<CustomTooltip/>}/>
                         <Legend height={36} verticalAlign={'top'}/>
+                        <ReferenceLine x={2*24*60 - Math.abs(currentMinute % (1*24*60))} stroke='green' yAxisId={1} strokeDasharray="3 3"/>
+                        <ReferenceLine x={1*24*60 - Math.abs(currentMinute % (1*24*60))} stroke='green' yAxisId={1} strokeDasharray="3 3"/>
                     </ComposedChart>
                 </ResponsiveContainer>
             </div>
